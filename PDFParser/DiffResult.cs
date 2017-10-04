@@ -10,8 +10,10 @@ namespace PDFParser
         public string Submission { get; private set; }
         public string Solution { get; private set; }
         public string Error { get; private set; }
+        public string Maze { get; private set; }
+        public string Moves { get; private set; }
 
-        public DiffResult(bool isEmpty, int sectionNumber, int testNumber, string diff, string submission, string solution, string error) {
+        public DiffResult(bool isEmpty, int sectionNumber, int testNumber, string diff, string submission, string solution, string error, string maze, string moves) {
             IsEmpty = isEmpty;
             SectionNumber = sectionNumber;
             TestNumber = testNumber;
@@ -19,6 +21,8 @@ namespace PDFParser
             Submission = submission;
             Solution = solution;
             Error = error;
+            Maze = maze;
+            Moves = moves;
         }
 
     }

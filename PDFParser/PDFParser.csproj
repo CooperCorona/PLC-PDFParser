@@ -45,6 +45,7 @@
     <Compile Include="PDFReader.cs" />
     <Compile Include="FileInputAccessor.cs" />
     <Compile Include="IndividualFileOutputGenerator.cs" />
+    <Compile Include="StringUtils.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

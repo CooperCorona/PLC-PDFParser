@@ -13,7 +13,7 @@ namespace PDFParser
 
         public void InitializeOutput() {
 			System.IO.Directory.CreateDirectory(OUT_DIRECTORY);
-			var fileRegex = new Regex(@"part\d+test\d+\.text");
+			var fileRegex = new Regex(@"part\d+test\d+\.txt");
 			foreach (var filePath in System.IO.Directory.EnumerateFiles(OUT_DIRECTORY))
 			{
 				if (fileRegex.IsMatch(filePath))
@@ -40,7 +40,7 @@ namespace PDFParser
 		public void WriteDiff(DiffResult result) {
             var outPath = GetFilePath(result.SectionNumber, result.TestNumber);
 			using (var streamWriter = new System.IO.StreamWriter(outPath)) {
-				var diffWriter = new DiffResultWriter();
+				var diffWriter = new DiffResultWriter(false);
 				diffWriter.Write(result, streamWriter);
 			}
         }
