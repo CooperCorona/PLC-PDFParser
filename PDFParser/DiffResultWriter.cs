@@ -5,13 +5,17 @@ using System.Text.RegularExpressions;
 namespace PDFParser
 {
 
-	public class DiffResultWriter
-	{
-        public bool Vertical { get; private set; }
+    public class DiffResultWriter
+    {
+        public bool Horizontal { get; private set; }
+        public int Buffer { get; private set; }
+        public char Filler { get; private set; }
 
-		public DiffResultWriter(bool vertical)
+		public DiffResultWriter(bool horizontal, int buffer, char filler)
 		{
-            Vertical = vertical;
+            Horizontal = horizontal;
+            Buffer = buffer;
+            Filler = filler;
 		}
 
 		public bool Write(DiffResult result, System.IO.TextWriter writer)
@@ -24,7 +28,7 @@ namespace PDFParser
             var diff2d = GetDiff2D(result);
 
 			writer.Write("{0} Test {1,2}\n\n", result.SectionNumber, result.TestNumber);
-			if (this.Vertical) {
+			if (!this.Horizontal) {
 				writer.Write("Submission:\n{0}\n\n", result.Submission);
 				writer.Write("Solution:\n{0}\n\n", result.Solution);
 				writer.Write("Initial Maze:\n{0}\n\n", result.Maze);
@@ -192,7 +196,7 @@ namespace PDFParser
 				var solution = EnsureSameLengthLines(RemoveLineNumbers(result.Solution));
 				var submission = EnsureSameLengthLines(RemoveLineNumbers(result.Submission));
 				var maze = EnsureSameLengthLines(RemoveLineNumbers(result.Maze));
-				var diff2d = new DiffGenerator2D(2, '#').Generate(solution, submission, maze);
+				var diff2d = new DiffGenerator2D(Buffer, Filler).Generate(solution, submission, maze);
                 return diff2d;
             } else {
                 return null;

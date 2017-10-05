@@ -13,16 +13,18 @@ namespace PDFParser
                 Console.WriteLine("mono PDFParser.exe <username> <cse password>");
                 return;
             }
+            var flags = Flags.Parse(args);
             IInputAccessor inputAccessor = null;
-			if (args.Length == 1)
+            Console.WriteLine(String.Join(", ", flags.Arguments));
+            if (flags.Arguments.Count == 1)
 			{
-				string fileName = args[0];
+                string fileName = flags.Arguments[0];
 				string path = System.IO.Path.Combine(Environment.CurrentDirectory, fileName);
 				inputAccessor = new FileInputAccessor(path);
             } else {
                 throw new NotImplementedException("Automatic grading not yet implemented.");
             }
-            var outputGenerator = new IndividualFileOutputGenerator();
+            var outputGenerator = new IndividualFileOutputGenerator(flags.Horizontal, flags.Buffer, flags.Filler);
             var reader = new PDFReader(inputAccessor, outputGenerator);
             reader.Parse();
         }

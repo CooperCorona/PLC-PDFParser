@@ -6,10 +6,16 @@ namespace PDFParser
     public class IndividualFileOutputGenerator: IOutputGenerator
 	{
 		private static string OUT_DIRECTORY = "out";
+		public bool Horizontal { get; private set; }
+		public int Buffer { get; private set; }
+		public char Filler { get; private set; }
 
-        public IndividualFileOutputGenerator()
-        {
-        }
+		public IndividualFileOutputGenerator(bool horizontal, int buffer, char filler)
+		{
+			Horizontal = horizontal;
+			Buffer = buffer;
+			Filler = filler;
+		}
 
         public void InitializeOutput() {
 			System.IO.Directory.CreateDirectory(OUT_DIRECTORY);
@@ -40,7 +46,7 @@ namespace PDFParser
 		public void WriteDiff(DiffResult result) {
             var outPath = GetFilePath(result.SectionNumber, result.TestNumber);
 			using (var streamWriter = new System.IO.StreamWriter(outPath)) {
-				var diffWriter = new DiffResultWriter(false);
+                var diffWriter = new DiffResultWriter(Horizontal, Buffer, Filler);
 				diffWriter.Write(result, streamWriter);
 			}
         }

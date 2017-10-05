@@ -49,6 +49,7 @@
     <Compile Include="DiffGenerator2D.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Diff2D.cs" />
+    <Compile Include="Flags.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
