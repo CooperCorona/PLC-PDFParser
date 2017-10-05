@@ -21,7 +21,6 @@ namespace PDFParser
 		{
             //Splitting by "Chapter 2" removes the table of contents.
             contents = contents.Split(new string[] { "Chapter 2" }, StringSplitOptions.None)[1];
-            System.IO.File.WriteAllText("./output.txt", contents);
             var diffs = ParseDiffs(contents);
             return diffs;
         }
