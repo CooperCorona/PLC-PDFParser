@@ -46,6 +46,9 @@
     <Compile Include="FileInputAccessor.cs" />
     <Compile Include="IndividualFileOutputGenerator.cs" />
     <Compile Include="StringUtils.cs" />
+    <Compile Include="DiffGenerator2D.cs" />
+    <Compile Include="Point.cs" />
+    <Compile Include="Diff2D.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

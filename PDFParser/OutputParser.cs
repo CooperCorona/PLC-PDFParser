@@ -46,7 +46,7 @@ namespace PDFParser
                 var diff = match.Groups[3].Value.Trim();
                 var submission = submissionMatches[i].Groups[1].Value.Trim();
                 var solution = solutionMatches[i].Groups[1].Value.Trim();
-                var error = errorMatches[i].Groups[1].Value.Trim();
+                var error = TrimError(errorMatches[i].Groups[1].Value.Trim());
                 var maze = FormatMaze(mazeMatches[i].Groups[1].Value.Trim());
                 var directions = directionsMatches[i].Groups[1].Value.Trim();
                 var result = new DiffResult(diff == "" && error == "", sectionNumber, testNumber, diff, submission, solution, error, maze, directions);
@@ -58,5 +58,17 @@ namespace PDFParser
         private string FormatMaze(string maze) {
             return maze.Replace(",", "");
         }
+
+        /// <summary>
+        /// Removes whitespace and exclusively-integer strings.
+        /// Because page numbers get randomly included in the
+        /// output, sometimes a no-error test will be considered
+        /// an error because it contains a number.
+        /// </summary>
+        /// <returns>The error.</returns>
+        private string TrimError(string error) {
+            return new Regex(@"^\s*\d+\s*$").Replace(error, "");
+        }
+
     }
 }
