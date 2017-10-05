@@ -117,7 +117,7 @@ namespace PDFParser
         /// <returns>The split.</returns>
         /// <param name="s">S.</param>
         private char[] Split(string s) {
-            return s.Split("\n").SelectMany(str => { return str.ToCharArray(); } ).ToArray();
+            return s.Split('\n').SelectMany(str => { return str.ToCharArray(); } ).ToArray();
         }
 
     }

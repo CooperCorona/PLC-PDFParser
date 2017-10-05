@@ -96,9 +96,9 @@ namespace PDFParser
         /// <param name="maze">Maze.</param>
         /// <param name="buffer">How much space to place between each individual string.</param>
         private string GetHorizontalMazes(string submission, string solution, string maze, int buffer = 2) {
-            string[] submissionLines = submission.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-            string[] solutionLines = solution.Split("\n", StringSplitOptions.RemoveEmptyEntries);
-            string[] mazeLines = maze.Split("\n", StringSplitOptions.RemoveEmptyEntries);
+            string[] submissionLines = submission.Split('\n').Where(s => { return s.Length > 0;  }).ToArray();
+            string[] solutionLines = solution.Split('\n').Where(s => { return s.Length > 0; }).ToArray();
+            string[] mazeLines = maze.Split('\n').Where(s => { return s.Length > 0; }).ToArray();
             //If there is an error, submission is the empty string.
             int mazeWidth = 0;
             if (submissionLines.Length > 0) {
