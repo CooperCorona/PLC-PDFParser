@@ -17,7 +17,7 @@ use the pre-built exe.
 
 If building yourself, the debug product is most likely in ```PDFParser/bin/Debug```, and
 the release product is most likely in ```PDFParser/bin/Release```. Otherwise, there is
-a pre-built executable in the main directory.
+a pre-built executable in the Executable directory.
 
 The executable is named ```PDFParser.exe```. To run it, open a command line shell,
 navigate to the directory containing the executable, and run the above command.
