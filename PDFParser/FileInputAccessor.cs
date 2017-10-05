@@ -4,15 +4,31 @@ using iTextSharp.text.pdf.parser;
 
 namespace PDFParser
 {
+    /// <summary>
+    /// Implements the IInputAccessor interface to read the pdf from a local
+    /// file.
+    /// </summary>
     public class FileInputAccessor: IInputAccessor
     {
+        /// <summary>
+        /// The path to load the pdf from.
+        /// </summary>
+        /// <value>The file path.</value>
         public string FilePath { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:PDFParser.FileInputAccessor"/> class.
+        /// </summary>
+        /// <param name="filePath">File path.</param>
         public FileInputAccessor(string filePath)
         {
             FilePath = filePath;
         }
 
+        /// <summary>
+        /// Gets the contents of the pdf.
+        /// </summary>
+        /// <returns>The contents.</returns>
         public string GetContents() {
             return ReadEntirePDF();
         }

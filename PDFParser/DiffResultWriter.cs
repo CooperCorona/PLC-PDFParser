@@ -4,13 +4,36 @@ using System.Text.RegularExpressions;
 
 namespace PDFParser
 {
-
+    /// <summary>
+    /// Configurable writer to output a parsed test to a stream.
+    /// </summary>
     public class DiffResultWriter
     {
+        /// <summary>
+        /// Whether the submission, solution, and original input should be
+        /// horizontally adjacent or vertically adjacent.
+        /// </summary>
+        /// <value><c>true</c> if horizontal; otherwise, <c>false</c>.</value>
         public bool Horizontal { get; private set; }
+        /// <summary>
+        /// How many non-diff characters to print around the diff characters
+        /// in two dimensional diffs.
+        /// </summary>
+        /// <value>The buffer.</value>
         public int Buffer { get; private set; }
+        /// <summary>
+        /// The character to print instead of non-diff characters in two
+        /// dimensional diffs.
+        /// </summary>
+        /// <value>The filler.</value>
         public char Filler { get; private set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="T:PDFParser.DiffResultWriter"/> class.
+        /// </summary>
+        /// <param name="horizontal">If set to <c>true</c> horizontal.</param>
+        /// <param name="buffer">Buffer.</param>
+        /// <param name="filler">Filler.</param>
 		public DiffResultWriter(bool horizontal, int buffer, char filler)
 		{
             Horizontal = horizontal;
@@ -18,6 +41,13 @@ namespace PDFParser
             Filler = filler;
 		}
 
+        /// <summary>
+        /// Writes the given parsed diff to the given writer. If the diff is empty
+        /// (meaning the test passed), then no output is written.
+        /// </summary>
+        /// <returns><c>true</c> if output was written; <c>false</c>otherwise.</returns>
+        /// <param name="result">Result.</param>
+        /// <param name="writer">Writer.</param>
 		public bool Write(DiffResult result, System.IO.TextWriter writer)
 		{
 			if (result.IsEmpty)
@@ -55,6 +85,16 @@ namespace PDFParser
             return true;
 		}
 
+        /// <summary>
+        /// Combines the rows of the submission, solution, and maze strings
+        /// so they can be printed horizontally.
+        /// </summary>
+        /// <returns>A string containing the submission, solution, and maze
+        /// strings arranged horizontally.</returns>
+        /// <param name="submission">Submission.</param>
+        /// <param name="solution">Solution.</param>
+        /// <param name="maze">Maze.</param>
+        /// <param name="buffer">How much space to place between each individual string.</param>
         private string GetHorizontalMazes(string submission, string solution, string maze, int buffer = 2) {
             string[] submissionLines = submission.Split("\n", StringSplitOptions.RemoveEmptyEntries);
             string[] solutionLines = solution.Split("\n", StringSplitOptions.RemoveEmptyEntries);
@@ -122,12 +162,26 @@ namespace PDFParser
             return text.ToString();
         }
 
+        /// <summary>
+        /// Pads the end of a StringBuilder with spaces until its length equals
+        /// the specified length.
+        /// </summary>
+        /// <param name="builder">Builder.</param>
+        /// <param name="length">Length.</param>
         private void RPad(System.Text.StringBuilder builder, int length) {
             while (builder.Length < length) {
                 builder.Append(' ');
             }
         }
 
+        /// <summary>
+        /// Removes line numbers from a string. The PDF parser sometimes includes
+        /// line numbers in the middle of other strings. It appears that they
+        /// are always at the beginning or the end of a line. If a number
+        /// appears at the beginning or end of a line, it is removed.
+        /// </summary>
+        /// <returns>A string with the line numbers removed.</returns>
+        /// <param name="input">Input.</param>
         private string RemoveLineNumbers(string input) {
             var lines = input.Split('\n');
             int mode = LengthMode(input);
@@ -153,6 +207,12 @@ namespace PDFParser
             }).Substring(1);
         }
 
+        /// <summary>
+        /// The mode of the set of lengths of lines in a string. Whatever
+        /// number occurs the most as length of characters in a line is returned.
+        /// </summary>
+        /// <returns>The line length that occurs the most.</returns>
+        /// <param name="input">Input.</param>
 		private int LengthMode(string input)
 		{
 			string[] lines = input.Split('\n');
@@ -181,6 +241,12 @@ namespace PDFParser
 			}).Key;
         }
 
+        /// <summary>
+        /// Removes any lines in the input string that does not have the same
+        /// length as the mode of the lengths.
+        /// </summary>
+        /// <returns>The same length lines.</returns>
+        /// <param name="input">Input.</param>
         private string EnsureSameLengthLines(string input) {
             string[] lines = input.Split('\n');
             int maxLength = LengthMode(input);
@@ -189,6 +255,12 @@ namespace PDFParser
             }).Substring(1);
         }
 
+        /// <summary>
+        /// Calculates the two dimensional diff from a DiffResult instance.
+        /// </summary>
+        /// <returns>The corresponding two dimensional diff if the submission
+        /// string exists, <c>null</c> otherwise.</returns>
+        /// <param name="result">Result.</param>
 		private Diff2D? GetDiff2D(DiffResult result)
 		{
 			if (result.Submission != "")

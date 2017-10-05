@@ -12,6 +12,11 @@ namespace PDFParser
         {
         }
 
+        /// <summary>
+        /// Parses the contents of a WebGrader result into a list of DiffResults.
+        /// </summary>
+        /// <returns>A list of DiffResults corresponding to WebGrader tests.</returns>
+        /// <param name="contents">Text of the WebGrader results.</param>
 		public List<DiffResult> Parse(string contents)
 		{
             //Splitting by "Chapter 2" removes the table of contents.
@@ -21,7 +26,12 @@ namespace PDFParser
             return diffs;
         }
 
-        private List<DiffResult> ParseDiffs(string contents) {
+		/// <summary>
+		/// Parses the contents of a WebGrader result into a list of DiffResults.
+		/// </summary>
+		/// <returns>A list of DiffResults corresponding to WebGrader tests.</returns>
+		/// <param name="contents">Text of the WebGrader results.</param>
+		private List<DiffResult> ParseDiffs(string contents) {
             var regex = new Regex(@"part(\d\d)test(\d\d)\.dif?f?(.+?)\d+\.\d+\.\d+ Input File", RegexOptions.Singleline);
             var submissionRegex = new Regex(@"\d\.\d+\.\d Submission Output.*?\d?\d?part\d\dtest\d\d\.output(.+?)\d\.\d+\.\d Solution Output", RegexOptions.Singleline);
             var solutionRegex = new Regex(@"\d\.\d+\.\d Solution Output.*?part\d\dtest\d\d\.solution(.+?)\d\.\d+\.\d stderr", RegexOptions.Singleline);
@@ -34,11 +44,8 @@ namespace PDFParser
             var errorMatches = errorRegex.Matches(contents);
             var mazeMatches = mazeRegex.Matches(contents);
             var directionsMatches = directionsRegex.Matches(contents);
+
             var diffs = new List<DiffResult>();
-            //Console.WriteLine(@"Matches: {0}", matches.Count);
-            //Console.WriteLine(@"Submissions: {0}", submissionMatches.Count);
-            //Console.WriteLine(@"Solutions: {0}", solutionMatches.Count);
-            //Console.WriteLine(@"Errors: {0}", errorMatches.Count);
             for (int i = 0; i < matches.Count; i++) {
                 var match = matches[i];
                 var sectionNumber = int.Parse(match.Groups[1].Value);
@@ -55,6 +62,12 @@ namespace PDFParser
             return diffs;
         }
 
+        /// <summary>
+        /// Parses the original input maze (which is a CSV of maze characters)
+        /// into the same format as the submission and solution strings.
+        /// </summary>
+        /// <returns>The maze.</returns>
+        /// <param name="maze">Maze.</param>
         private string FormatMaze(string maze) {
             return maze.Replace(",", "");
         }
