@@ -113,15 +113,6 @@ namespace PDFParser
 				mazeWidth = Math.Max(mazeWidth, mazeLines[0].Length);
 			}
 
-            //Sometimes the PDF parser includes a random number (probably page number)
-            //at the end of the submission. This causes an incorrect number of lines,
-            //which causes a crash when the for loop tries to go beyond the bounds
-            //of the other arrays. We filter out all too-small lines (the first line
-            //should be the correct length).
-            //submissionLines = submissionLines.Where(s => { return s.Length == mazeWidth; }).ToArray();
-            //solutionLines = solutionLines.Where(s => { return s.Length == mazeWidth; }).ToArray();
-            //mazeLines = mazeLines.Where(s => { return s.Length == mazeWidth; }).ToArray();
-
             //"Submission" is 10 characters long.
             int columns = Math.Max(mazeWidth, 10);
 
@@ -132,12 +123,6 @@ namespace PDFParser
             RPad(text, (columns + buffer) * 2);
             text.Append("Maze");
             RPad(text, (columns + buffer) * 3);
-            //Console.WriteLine("1: {0}", submissionLines.Length);
-            //Console.WriteLine(submission);
-            //Console.WriteLine("2: {0}", solutionLines.Length);
-            //Console.WriteLine(solution);
-            //Console.WriteLine("3: {0}", mazeLines.Length);
-            //Console.WriteLine(maze);
             for (int i = 0; i < submissionLines.Length; i++)
 			{
                 var line = new System.Text.StringBuilder();
@@ -174,86 +159,6 @@ namespace PDFParser
             }
         }
 
-        /// <summary>
-        /// Removes line numbers from a string. The PDF parser sometimes includes
-        /// line numbers in the middle of other strings. It appears that they
-        /// are always at the beginning or the end of a line. If a number
-        /// appears at the beginning or end of a line, it is removed.
-        /// </summary>
-        /// <returns>A string with the line numbers removed.</returns>
-        /// <param name="input">Input.</param>
-        private string RemoveLineNumbers(string input) {
-            var lines = input.Split('\n');
-            int mode = LengthMode(input);
-            return lines.Select(line => {
-                if (line.Length == mode)
-                {
-                    return line;
-                }
-                else
-                {
-					var result = new Regex(@"^\d+").Replace(line, "");
-					if (line.Length == mode)
-					{
-						return result;
-					}
-					else
-					{
-                        return new Regex(@"\d+$").Replace(result, "");
-                    }
-                }
-            }).Aggregate("", (a, b) => {
-                return a + "\n" + b;
-            }).Substring(1);
-        }
-
-        /// <summary>
-        /// The mode of the set of lengths of lines in a string. Whatever
-        /// number occurs the most as length of characters in a line is returned.
-        /// </summary>
-        /// <returns>The line length that occurs the most.</returns>
-        /// <param name="input">Input.</param>
-		private int LengthMode(string input)
-		{
-			string[] lines = input.Split('\n');
-			var modes = new System.Collections.Generic.Dictionary<int, int>();
-			foreach (var line in lines)
-			{
-				if (modes.ContainsKey(line.Length))
-				{
-					modes[line.Length] += 1;
-				}
-				else
-				{
-					modes[line.Length] = 1;
-				}
-			}
-			return modes.Aggregate(modes.First(), (a, b) => {
-				if (b.Value > a.Value)
-				{
-					return b;
-				}
-				else
-				{
-					return a;
-				}
-
-			}).Key;
-        }
-
-        /// <summary>
-        /// Removes any lines in the input string that does not have the same
-        /// length as the mode of the lengths.
-        /// </summary>
-        /// <returns>The same length lines.</returns>
-        /// <param name="input">Input.</param>
-        private string EnsureSameLengthLines(string input) {
-            string[] lines = input.Split('\n');
-            int maxLength = LengthMode(input);
-            return lines.Where(l => { return l.Length == maxLength; }).Aggregate("", (a, b) => {
-                return a + "\n" + b;
-            }).Substring(1);
-        }
 
         /// <summary>
         /// Calculates the two dimensional diff from a DiffResult instance.
@@ -265,10 +170,7 @@ namespace PDFParser
 		{
 			if (result.Submission != "")
 			{
-				var solution = EnsureSameLengthLines(RemoveLineNumbers(result.Solution));
-				var submission = EnsureSameLengthLines(RemoveLineNumbers(result.Submission));
-				var maze = EnsureSameLengthLines(RemoveLineNumbers(result.Maze));
-				var diff2d = new DiffGenerator2D(Buffer, Filler).Generate(solution, submission, maze);
+				var diff2d = new DiffGenerator2D(Buffer, Filler).Generate(result.Solution, result.Submission, result.Maze);
                 return diff2d;
             } else {
                 return null;

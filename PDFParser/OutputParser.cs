@@ -50,11 +50,11 @@ namespace PDFParser
                 var sectionNumber = int.Parse(match.Groups[1].Value);
                 var testNumber = int.Parse(match.Groups[2].Value);
                 var diff = match.Groups[3].Value.Trim();
-                var submission = submissionMatches[i].Groups[1].Value.Trim();
-                var solution = solutionMatches[i].Groups[1].Value.Trim();
+                var submission = EnsureSameLengthLines(RemoveLineNumbers(submissionMatches[i].Groups[1].Value.Trim()));
+                var solution = EnsureSameLengthLines(RemoveLineNumbers(solutionMatches[i].Groups[1].Value.Trim()));
                 var error = TrimError(errorMatches[i].Groups[1].Value.Trim());
-                var maze = FormatMaze(mazeMatches[i].Groups[1].Value.Trim());
-                var directions = directionsMatches[i].Groups[1].Value.Trim();
+                var maze = EnsureSameLengthLines(RemoveLineNumbers(FormatMaze(mazeMatches[i].Groups[1].Value.Trim())));
+                var directions = RemoveLineNumbers(directionsMatches[i].Groups[1].Value.Trim());
                 var result = new DiffResult(diff == "" && error == "", sectionNumber, testNumber, diff, submission, solution, error, maze, directions);
                 diffs.Add(result);
             }
@@ -82,5 +82,92 @@ namespace PDFParser
             return new Regex(@"^\s*\d+\s*$").Replace(error, "");
         }
 
+        /// <summary>
+        /// Removes line numbers from a string. The PDF parser sometimes includes
+        /// line numbers in the middle of other strings. It appears that they
+        /// are always at the beginning or the end of a line. If a number
+        /// appears at the beginning or end of a line, it is removed.
+        /// </summary>
+        /// <returns>A string with the line numbers removed.</returns>
+        /// <param name="input">Input.</param>
+        private string RemoveLineNumbers(string input) {
+            if (input == "") {
+                return "";
+            }
+            var lines = input.Split('\n');
+            int mode = LengthMode(input);
+            return lines.Select(line => {
+                if (line.Length == mode)
+                {
+                    return line;
+                }
+                else
+                {
+                    var result = new Regex(@"^\d+").Replace(line, "");
+                    if (line.Length == mode)
+                    {
+                        return result;
+                    }
+                    else
+                    {
+                        return new Regex(@"\d+$").Replace(result, "");
+                    }
+                }
+            }).Aggregate("", (a, b) => {
+                return a + "\n" + b;
+            }).Substring(1);
+        }
+
+        /// <summary>
+        /// The mode of the set of lengths of lines in a string. Whatever
+        /// number occurs the most as length of characters in a line is returned.
+        /// </summary>
+        /// <returns>The line length that occurs the most.</returns>
+        /// <param name="input">Input.</param>
+        private int LengthMode(string input)
+        {
+            string[] lines = input.Split('\n');
+            var modes = new System.Collections.Generic.Dictionary<int, int>();
+            foreach (var line in lines)
+            {
+                if (modes.ContainsKey(line.Length))
+                {
+                    modes[line.Length] += 1;
+                }
+                else
+                {
+                    modes[line.Length] = 1;
+                }
+            }
+            return modes.Aggregate(modes.First(), (a, b) => {
+                if (b.Value > a.Value)
+                {
+                    return b;
+                }
+                else
+                {
+                    return a;
+                }
+
+            }).Key;
+        }
+
+        /// <summary>
+        /// Removes any lines in the input string that does not have the same
+        /// length as the mode of the lengths.
+        /// </summary>
+        /// <returns>The same length lines.</returns>
+        /// <param name="input">Input.</param>
+        private string EnsureSameLengthLines(string input) {
+            if (input == "") {
+                return "";
+            }
+
+            string[] lines = input.Split('\n');
+            int maxLength = LengthMode(input);
+            return lines.Where(l => { return l.Length == maxLength; }).Aggregate("", (a, b) => {
+                return a + "\n" + b;
+            }).Substring(1);
+        }
     }
 }
